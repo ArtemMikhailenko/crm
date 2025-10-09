@@ -7,6 +7,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { env } from "@/env";
 import { useRegister } from "@/features/auth/hooks";
 import {
   type RegisterSchemaType,
@@ -121,7 +122,7 @@ export function RegisterForm() {
         />
         <div className="flex items-center justify-center">
           <ReCAPTCHA
-            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}
+            sitekey={env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
             onChange={setRecaptcha}
           />
         </div>

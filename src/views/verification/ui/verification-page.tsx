@@ -10,7 +10,7 @@ import { VerificationLoader } from "@/shared/ui/loader";
 
 export function VerificationPage() {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams?.get("token") ?? null;
   const { verification } = useVerification();
 
   useEffect(() => {

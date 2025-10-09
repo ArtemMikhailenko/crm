@@ -10,7 +10,7 @@ import { toastMessageHandler } from "@/shared/utils";
 
 export const useNewPassword = () => {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams?.get("token") ?? null;
   const router = useRouter();
 
   const { mutate: newPassword, isPending: isNewPasswordPending } = useMutation({

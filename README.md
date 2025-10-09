@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-In_Development-yellow?style=for-the-badge" alt="Status">
+  <img src="https://img.shields.io/badge/Status-✅_Production_Ready-brightgreen?style=for-the-badge" alt="Status">
   <img src="https://img.shields.io/badge/Architecture-Feature_Sliced-blue?style=for-the-badge" alt="Architecture">
   <img src="https://img.shields.io/badge/Auth-Session_+_OAuth-green?style=for-the-badge" alt="Authentication">
   <img src="https://img.shields.io/badge/Forms-Zod_+_Hook_Form-orange?style=for-the-badge" alt="Forms">
@@ -23,7 +23,7 @@
   <strong>🔗 Pairs with <a href="https://github.com/andreyblck/nest-auth-template-backend">NestJS Auth Template Backend</a></strong>
 </p>
 
-> **⚠️ In Development:** This template is actively being developed. Features and documentation are updated frequently.
+> **✅ Production Ready:** This template is fully functional and ready for production use. Type-safe environment variables, comprehensive authentication flows, and modern architecture included.
 
 ---
 
@@ -53,6 +53,7 @@
 - **Tailwind CSS 4** for styling
 - **Radix UI** primitives for accessibility
 - **Feature-Sliced Design** architecture
+- **T3 Env** for type-safe environment variables
 
 ### 🔐 Authentication & Security
 
@@ -79,6 +80,8 @@
 - **ESLint & Prettier** configuration
 - **Import Sorting** automation
 - **Type Checking** with TypeScript
+- **Type-Safe Env Variables** with T3 Env
+- **Runtime Validation** with Zod
 - **Custom Hooks** and utilities
 - **Reusable Components** library
 
@@ -97,9 +100,15 @@ pnpm install
 ### 2️⃣ Setup Environment
 
 ```bash
-cp .env.example .env.local
-# Edit .env.local with your configuration
+cp .env.example .env
+# Edit .env with your configuration
 ```
+
+**Required environment variables:**
+- `SERVER_URL` - Your backend API URL
+- `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` - Google reCAPTCHA site key
+
+All environment variables are validated at startup using T3 Env!
 
 ### 3️⃣ Start Backend
 
@@ -134,22 +143,48 @@ pnpm dev
 
 ### Environment Variables
 
-<details>
-<summary><strong>🔐 Authentication Settings</strong></summary>
+This project uses **T3 Env** for type-safe environment variables with runtime validation.
 
-| Variable                         | Description               | Default                 | Required |
-| -------------------------------- | ------------------------- | ----------------------- | -------- |
-| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Google reCAPTCHA site key | -                       | ✅       |
-| `SERVER_URL`                     | Backend API URL           | `http://localhost:4000` | ✅       |
+<details>
+<summary><strong>🔐 Environment Configuration</strong></summary>
+
+| Variable                         | Type     | Description               | Default                 | Required |
+| -------------------------------- | -------- | ------------------------- | ----------------------- | -------- |
+| `SERVER_URL`                     | Server   | Backend API URL           | `http://localhost:4000` | ✅       |
+| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Client   | Google reCAPTCHA site key | -                       | ✅       |
+| `SKIP_ENV_VALIDATION`            | Optional | Skip env validation       | `false`                 | ❌       |
+
+**Server vs Client Variables:**
+- **Server variables** (e.g., `SERVER_URL`) are only available on the server side
+- **Client variables** (prefixed with `NEXT_PUBLIC_`) are available on both server and client
+- All variables are validated at build time using Zod schemas
 
 </details>
 
 ### Example .env.local File
 
 ```env
-# Authentication
-NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your-recaptcha-site-key
-SERVER_URL=http://localhost:4000
+# Server Configuration
+SERVER_URL='http://localhost:4000'
+
+# ReCAPTCHA
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY='your-recaptcha-site-key-here'
+
+# Optional: Skip environment validation (useful for Docker builds)
+# SKIP_ENV_VALIDATION=true
+```
+
+### Type-Safe Environment Access
+
+```typescript
+import { env } from "@/env";
+
+// ✅ Type-safe and validated
+const apiUrl = env.SERVER_URL;
+const recaptchaKey = env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+
+// ❌ TypeScript error - variable doesn't exist
+const invalid = env.SOME_VARIABLE;
 ```
 
 ### Getting Google reCAPTCHA Keys
@@ -551,6 +586,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - **[NestJS Auth Template Backend](https://github.com/andreyblck/nest-auth-template-backend)** - The backend counterpart
 - **[Feature-Sliced Design](https://feature-sliced.design/)** - Architectural methodology
 - **[Next.js Documentation](https://nextjs.org/docs)** - Framework documentation
+- **[T3 Env](https://env.t3.gg/)** - Type-safe environment variables
 - **[Radix UI](https://www.radix-ui.com/)** - Component primitives
 - **[Tailwind CSS](https://tailwindcss.com/)** - Styling framework
 

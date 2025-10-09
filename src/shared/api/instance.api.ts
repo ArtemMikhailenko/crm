@@ -1,7 +1,8 @@
 import { FetchClient } from "@/shared/utils";
+import { env } from "@/env";
 
 export const api = new FetchClient({
-  baseUrl: process.env.SERVER_URL as string,
+  baseUrl: env.SERVER_URL,
   options: {
     credentials: "include",
   },

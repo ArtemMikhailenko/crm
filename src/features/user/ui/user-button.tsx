@@ -1,8 +1,6 @@
 import React from "react";
 
-type Props = {};
-
-function UserButton({}: Props) {
+function UserButton() {
   return <div>user-button</div>;
 }
 

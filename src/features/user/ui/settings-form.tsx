@@ -82,7 +82,7 @@ export function SettingsForm() {
                   />
                 </FormControl>
                 <FormDescription>
-                  We'll use this email for account notifications and security
+                  We&apos;ll use this email for account notifications and security
                   alerts.
                 </FormDescription>
                 <FormMessage />

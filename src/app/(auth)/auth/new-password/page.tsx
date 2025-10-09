@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 import { NewPasswordPage } from "@/widgets/auth";
 
@@ -8,5 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function NewPassword() {
-  return <NewPasswordPage />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NewPasswordPage />
+    </Suspense>
+  );
 }

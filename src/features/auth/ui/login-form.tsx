@@ -9,6 +9,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { env } from "@/env";
 import { useLogin } from "@/features/auth/hooks";
 import { type LoginSchemaType, loginSchema } from "@/features/auth/schemas";
 
@@ -117,7 +118,7 @@ export function LoginForm() {
         )}
         <div className="flex items-center justify-center">
           <ReCAPTCHA
-            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}
+            sitekey={env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
             onChange={setRecaptcha}
           />
         </div>
