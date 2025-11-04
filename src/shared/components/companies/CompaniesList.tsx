@@ -70,17 +70,15 @@ export const CompaniesList: React.FC<CompaniesListProps> = ({ activeTab = 'all' 
     router.push(`/dashboard/companies/${encodeURIComponent(companyId)}`)
   }
 
-  const getTypeBadge = (type: 'CUSTOMER' | 'SUBCONTRACTOR' | 'INTERNAL') => {
+  const getTypeBadge = (type: 'CUSTOMER' | 'SUBCONTRACTOR') => {
     const typeLabels = {
       'SUBCONTRACTOR': 'Subcontractor',
       'CUSTOMER': 'Customer',
-      'INTERNAL': 'Internal'
     }
     
     const variants = {
       'SUBCONTRACTOR': 'default',
       'CUSTOMER': 'secondary',
-      'INTERNAL': 'outline'
     } as const
     
     return (
@@ -90,7 +88,7 @@ export const CompaniesList: React.FC<CompaniesListProps> = ({ activeTab = 'all' 
     )
   }
 
-  const getStatusBadge = (isActive: boolean) => {
+  const getStatusBadge = (isActive: boolean | undefined) => {
     return (
       <Badge variant={isActive ? 'default' : 'secondary'}>
         {isActive ? 'Active' : 'Inactive'}
@@ -138,13 +136,12 @@ export const CompaniesList: React.FC<CompaniesListProps> = ({ activeTab = 'all' 
           <div className="w-[266px]">
             <div className="mb-1 text-[14px] font-medium text-[#2d3145]">Type</div>
             <select
-              onChange={(e) => handleFilterChange({ type: e.target.value as 'CUSTOMER' | 'SUBCONTRACTOR' | 'INTERNAL' || undefined })}
+              onChange={(e) => handleFilterChange({ type: e.target.value as 'CUSTOMER' | 'SUBCONTRACTOR' || undefined })}
               className="flex h-12 w-full items-center justify-between rounded-full border border-[#ccd5dc] bg-white px-4 text-sm text-[#abadb5]"
             >
               <option value="">All types</option>
               <option value="SUBCONTRACTOR">Subcontractors</option>
               <option value="CUSTOMER">Customers</option>
-              <option value="INTERNAL">Internal</option>
             </select>
           </div>
 

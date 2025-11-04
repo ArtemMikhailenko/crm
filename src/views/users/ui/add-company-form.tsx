@@ -12,7 +12,7 @@ import { Loader2 } from "lucide-react";
 
 const addCompanySchema = z.object({
   name: z.string().min(1, "Company name is required"),
-  type: z.enum(['CUSTOMER', 'SUBCONTRACTOR', 'INTERNAL'], {
+  type: z.enum(['CUSTOMER', 'SUBCONTRACTOR'], {
     required_error: 'Company type is required',
   }),
   description: z.string().optional(),
@@ -88,7 +88,6 @@ export function AddCompanyForm({ onCancel, onSuccess }: Props) {
                 >
                   <option value="SUBCONTRACTOR">Subcontractor</option>
                   <option value="CUSTOMER">Customer</option>
-                  <option value="INTERNAL">Internal</option>
                 </select>
               </FormControl>
               <FormMessage />
