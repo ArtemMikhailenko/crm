@@ -1,4 +1,4 @@
-import { User } from "@/features/auth/types";
+import { User } from "@/shared/types/user";
 import {
   SettingsSchemaType,
   UpdatePasswordSchemaType,
@@ -19,19 +19,17 @@ class UserService {
         
         console.warn('API not available, using mock profile data')
         
-        // Return mock profile for development
+        // Return mock profile for development (same structure as API response)
         return {
-          data: {
-            id: '1',
-            email: 'user@example.com',
-            name: 'Development User',
-            displayName: 'Development User',
-            firstName: 'Development',
-            lastName: 'User',
-            isVerified: true,
-            createdAt: new Date().toISOString(),
-          }
-        }
+          id: '1',
+          email: 'user@example.com',
+          displayName: 'Development User',
+          firstName: 'Development',
+          lastName: 'User',
+          status: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as User
       }
       throw error;
     }

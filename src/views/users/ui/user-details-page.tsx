@@ -5,11 +5,16 @@ import { Button } from "@/shared/ui/button";
 import { Avatar } from "@/shared/ui/avatar";
 import { Switch } from "@/shared/ui/switch";
 import { useRouter } from "next/navigation";
-import { useUser } from "@/shared/hooks/useUsers";
+import { useUser, useUserRates, useUserContacts, useUserVacations, useUserAlertSettings } from "@/shared/hooks/useUsers";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { Modal } from "@/shared/ui/modal";
 import { EditUserForm } from "./edit-user-form";
+import { EditRatesForm } from "./edit-rates-form";
+import { EditContactsForm } from "./edit-contacts-form";
+import { EditVacationsForm } from "./edit-vacations-form";
+import { EditAlertsForm } from "./edit-alerts-form";
 import { useState } from "react";
+import { Clock, Calendar } from "lucide-react";
 
 type Props = {
   userId: string;
@@ -17,8 +22,16 @@ type Props = {
 
 export function UserDetailsPage({ userId }: Props) {
   const { data: user, isLoading, error } = useUser(userId);
+  const { data: rates } = useUserRates(userId);
+  const { data: contactsData } = useUserContacts(userId);
+  const { data: vacationsData } = useUserVacations(userId);
+  const { data: alertSettings } = useUserAlertSettings(userId);
   const router = useRouter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isRatesModalOpen, setIsRatesModalOpen] = useState(false);
+  const [isContactsModalOpen, setIsContactsModalOpen] = useState(false);
+  const [isVacationsModalOpen, setIsVacationsModalOpen] = useState(false);
+  const [isAlertsModalOpen, setIsAlertsModalOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -101,9 +114,7 @@ export function UserDetailsPage({ userId }: Props) {
           {/* Description */}
           <div className="mb-2 text-base font-semibold text-slate-700">Description</div>
           <p className="text-sm text-slate-500">
-            {user.firstName && user.lastName 
-              ? `${user.firstName} ${user.lastName} - ${user.email}` 
-              : 'No description available'}
+            {user.description || 'No description available'}
           </p>
 
           <div className="mt-5">
@@ -117,7 +128,7 @@ export function UserDetailsPage({ userId }: Props) {
             <div className="mb-4 flex items-center justify-between">
               <div className="text-xl font-semibold text-slate-800">Rate and Salary</div>
               <button 
-                onClick={() => {/* TODO: Open edit rate modal */}}
+                onClick={() => setIsRatesModalOpen(true)}
                 className="grid h-9 w-9 place-items-center rounded-full border border-[#aab8c2] hover:bg-slate-50" 
                 aria-label="Edit rates"
               >
@@ -128,30 +139,73 @@ export function UserDetailsPage({ userId }: Props) {
             </div>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
               <div>
-                <div className="text-slate-500">Type of work</div>
-                <div className="text-slate-800">—</div>
-                <div className="mt-2 text-slate-500">Rate per hour</div>
-                <div className="text-slate-800">—</div>
+                <div className="flex items-center gap-2 text-slate-500 mb-1">
+                  <Clock className="w-4 h-4" />
+                  <span>Type of work</span>
+                </div>
+                <div className="text-slate-800 font-medium">
+                  {rates?.workTypes && rates.workTypes.length > 0 
+                    ? rates.workTypes.join(', ') 
+                    : '—'}
+                </div>
+                <div className="mt-4 text-slate-500">Rate per hour</div>
+                <div className="text-slate-800 font-medium">
+                  {rates?.ratePerHour ? `$${rates.ratePerHour}` : '—'}
+                </div>
               </div>
               <div>
-                <div className="text-slate-500">Type of work</div>
-                <div className="text-slate-800">—</div>
-                <div className="mt-2 text-slate-500">Cost per linear meter</div>
-                <div className="text-slate-800">—</div>
+                <div className="flex items-center gap-2 text-slate-500 mb-1">
+                  <Clock className="w-4 h-4" />
+                  <span>Type of work</span>
+                </div>
+                <div className="text-slate-800 font-medium">
+                  {rates?.workTypes && rates.workTypes.length > 1 
+                    ? rates.workTypes[1] 
+                    : rates?.workTypes && rates.workTypes.length > 0 
+                      ? rates.workTypes[0] 
+                      : '—'}
+                </div>
+                <div className="mt-4 text-slate-500">Cost per linear meter</div>
+                <div className="text-slate-800 font-medium">
+                  {rates?.ratePerLinearMeter ? `$${rates.ratePerLinearMeter}` : '—'}
+                </div>
               </div>
               <div>
-                <div className="text-slate-500">Type of work</div>
-                <div className="text-slate-800">—</div>
-                <div className="mt-2 text-slate-500">Cost per m2</div>
-                <div className="text-slate-800">—</div>
+                <div className="flex items-center gap-2 text-slate-500 mb-1">
+                  <Clock className="w-4 h-4" />
+                  <span>Type of work</span>
+                </div>
+                <div className="text-slate-800 font-medium">
+                  {rates?.workTypes && rates.workTypes.length > 2 
+                    ? rates.workTypes[2] 
+                    : rates?.workTypes && rates.workTypes.length > 0 
+                      ? rates.workTypes[0] 
+                      : '—'}
+                </div>
+                <div className="mt-4 text-slate-500">Cost per m²</div>
+                <div className="text-slate-800 font-medium">
+                  {rates?.ratePerM2 ? `$${rates.ratePerM2}` : '—'}
+                </div>
               </div>
             </div>
             <div className="mt-5 grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
-                <div className="mb-1 text-slate-500">Schedule</div>
-                <div className="text-sm text-slate-800 whitespace-pre-line">—</div>
+                <div className="flex items-center gap-2 mb-2 text-slate-500">
+                  <Calendar className="w-4 h-4" />
+                  <span>Schedule</span>
+                </div>
+                <div className="text-sm text-slate-800">
+                  {rates?.workSchedule ? (
+                    <div className="grid grid-cols-2 gap-x-8 gap-y-1">
+                      {Object.entries(rates.workSchedule).map(([day, time]) => (
+                        <div key={day} className="whitespace-nowrap">
+                          <span className="capitalize font-medium">{day}.</span> {time.start}-{time.end}
+                        </div>
+                      ))}
+                    </div>
+                  ) : '—'}
+                </div>
               </div>
-              <div className="text-sm text-slate-800 whitespace-pre-line">—</div>
             </div>
           </div>
 
@@ -159,7 +213,7 @@ export function UserDetailsPage({ userId }: Props) {
             <div className="mb-4 flex items-center justify-between">
               <div className="text-xl font-semibold text-slate-800">Contacts</div>
               <button 
-                onClick={() => {/* TODO: Open edit contacts modal */}}
+                onClick={() => setIsContactsModalOpen(true)}
                 className="grid h-9 w-9 place-items-center rounded-full border border-[#aab8c2] hover:bg-slate-50" 
                 aria-label="Edit contacts"
               >
@@ -169,21 +223,33 @@ export function UserDetailsPage({ userId }: Props) {
               </button>
             </div>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-              <div className="space-y-1">
-                <div className="text-slate-700">{user.displayName}</div>
-                <div className="text-slate-500">{user.phone || '—'}</div>
-                <div className="text-slate-500">{user.email}</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-slate-700">—</div>
-                <div className="text-slate-500">—</div>
-                <div className="text-slate-500">—</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-slate-700">—</div>
-                <div className="text-slate-500">—</div>
-                <div className="text-slate-500">—</div>
-              </div>
+              {contactsData && contactsData.length > 0 ? (
+                contactsData.slice(0, 3).map((contact) => (
+                  <div key={contact.id} className="space-y-1">
+                    <div className="text-slate-700">{contact.name}</div>
+                    <div className="text-slate-500">{contact.phone || '—'}</div>
+                    <div className="text-slate-500">{contact.email || '—'}</div>
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div className="space-y-1">
+                    <div className="text-slate-700">{user.displayName}</div>
+                    <div className="text-slate-500">{user.phone || '—'}</div>
+                    <div className="text-slate-500">{user.email}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-slate-700">—</div>
+                    <div className="text-slate-500">—</div>
+                    <div className="text-slate-500">—</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-slate-700">—</div>
+                    <div className="text-slate-500">—</div>
+                    <div className="text-slate-500">—</div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -195,9 +261,14 @@ export function UserDetailsPage({ userId }: Props) {
           <div className="mb-4 flex items-center justify-between">
             <div className="text-xl font-semibold text-slate-800">Vacation schedule</div>
             <div className="flex items-center gap-2">
-              <Button className="rounded-full bg-emerald-400 hover:bg-emerald-500">Add new</Button>
+              <Button 
+                className="rounded-full bg-emerald-400 hover:bg-emerald-500"
+                onClick={() => setIsVacationsModalOpen(true)}
+              >
+                Add new
+              </Button>
               <button 
-                onClick={() => {/* TODO: Open edit vacations modal */}}
+                onClick={() => setIsVacationsModalOpen(true)}
                 className="grid h-9 w-9 place-items-center rounded-full border border-[#aab8c2] hover:bg-slate-50" 
                 aria-label="Edit vacations"
               >
@@ -208,10 +279,21 @@ export function UserDetailsPage({ userId }: Props) {
             </div>
           </div>
           <div className="space-y-4">
-            <div className="border-b pb-3">
-              <div className="text-slate-700">No vacations scheduled</div>
-              <div className="mt-1 text-sm text-slate-500">—</div>
-            </div>
+            {vacationsData && vacationsData.length > 0 ? (
+              vacationsData.slice(0, 3).map((vacation) => (
+                <div key={vacation.id} className="border-b pb-3">
+                  <div className="text-slate-700">{vacation.title}</div>
+                  <div className="mt-1 text-sm text-slate-500">
+                    {new Date(vacation.startDate).toLocaleDateString()} - {new Date(vacation.endDate).toLocaleDateString()}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="border-b pb-3">
+                <div className="text-slate-700">No vacations scheduled</div>
+                <div className="mt-1 text-sm text-slate-500">—</div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -219,7 +301,7 @@ export function UserDetailsPage({ userId }: Props) {
           <div className="mb-4 flex items-center justify-between">
             <div className="text-xl font-semibold text-slate-800">Setting up alerts</div>
             <button 
-              onClick={() => {/* TODO: Open edit alerts modal */}}
+              onClick={() => setIsAlertsModalOpen(true)}
               className="grid h-9 w-9 place-items-center rounded-full border border-[#aab8c2] hover:bg-slate-50" 
               aria-label="Edit alerts"
             >
@@ -229,14 +311,27 @@ export function UserDetailsPage({ userId }: Props) {
             </button>
           </div>
           <div className="space-y-4">
-            {[0,1,2,3].map((i) => (
-              <div key={i} className="flex items-start gap-4">
-                <Switch defaultChecked={i===0} />
-                <p className="text-sm text-slate-700">
-                  Alert configuration {i + 1}
-                </p>
-              </div>
-            ))}
+            {alertSettings && alertSettings.length > 0 ? (
+              alertSettings.slice(0, 4).map((setting, i) => (
+                <div key={setting.id} className="flex items-start gap-4">
+                  <Switch checked={setting.isEnabled} disabled />
+                  <p className="text-sm text-slate-700">
+                    {setting.alertType} уведомления для {setting.category}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <>
+                {[0,1,2,3].map((i) => (
+                  <div key={i} className="flex items-start gap-4">
+                    <Switch defaultChecked={i===0} disabled />
+                    <p className="text-sm text-slate-700">
+                      Настройка уведомлений {i + 1}
+                    </p>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -252,6 +347,53 @@ export function UserDetailsPage({ userId }: Props) {
           onCancel={() => setIsEditModalOpen(false)}
           onSuccess={() => setIsEditModalOpen(false)}
         />
+      </Modal>
+
+      {/* Edit Rates Modal */}
+      <Modal
+        open={isRatesModalOpen}
+        onClose={() => setIsRatesModalOpen(false)}
+        title="Edit Rates and Salary"
+      >
+        <EditRatesForm
+          userId={userId}
+          rates={rates}
+          onCancel={() => setIsRatesModalOpen(false)}
+          onSuccess={() => setIsRatesModalOpen(false)}
+        />
+      </Modal>
+
+      {/* Edit Contacts Modal */}
+      <Modal
+        open={isContactsModalOpen}
+        onClose={() => setIsContactsModalOpen(false)}
+        title="Manage Contacts"
+      >
+        <EditContactsForm
+          userId={userId}
+          onCancel={() => setIsContactsModalOpen(false)}
+        />
+      </Modal>
+
+      {/* Edit Vacations Modal */}
+      <Modal
+        open={isVacationsModalOpen}
+        onClose={() => setIsVacationsModalOpen(false)}
+        title="Manage Vacations"
+      >
+        <EditVacationsForm
+          userId={userId}
+          onCancel={() => setIsVacationsModalOpen(false)}
+        />
+      </Modal>
+
+      {/* Edit Alerts Modal */}
+      <Modal
+        open={isAlertsModalOpen}
+        onClose={() => setIsAlertsModalOpen(false)}
+        title="Alert Settings"
+      >
+        <EditAlertsForm userId={userId} />
       </Modal>
     </div>
   );

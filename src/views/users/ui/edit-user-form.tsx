@@ -17,6 +17,7 @@ const editUserSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   phone: z.string().optional(),
   companyId: z.string().optional(),
+  description: z.string().optional(),
 });
 
 export type EditUserSchema = z.infer<typeof editUserSchema>;
@@ -39,6 +40,7 @@ export function EditUserForm({ user, onCancel, onSuccess }: Props) {
       lastName: user.lastName || "",
       phone: user.phone || "",
       companyId: user.company?.id || "",
+      description: user.description || "",
     },
   });
 
@@ -51,6 +53,7 @@ export function EditUserForm({ user, onCancel, onSuccess }: Props) {
         lastName: values.lastName,
         phone: values.phone || undefined,
         companyId: values.companyId || undefined,
+        description: values.description || undefined,
       });
       onSuccess?.();
     } catch (error) {
@@ -119,6 +122,24 @@ export function EditUserForm({ user, onCancel, onSuccess }: Props) {
               <FormLabel>Phone (optional)</FormLabel>
               <FormControl>
                 <Input placeholder="+1 (555) 000-0000" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description (optional)</FormLabel>
+              <FormControl>
+                <textarea
+                  className="min-h-[80px] w-full rounded-md border border-input bg-white px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                  placeholder="Enter user description..."
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

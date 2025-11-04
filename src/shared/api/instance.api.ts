@@ -11,9 +11,12 @@ export const apiClient = axios.create({
 
 // Interceptor для автоматического добавления токена
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = localStorage.getItem('authToken')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+  // Check if we're in the browser (client-side)
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('authToken')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
   }
   return config
 })
@@ -24,8 +27,8 @@ apiClient.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       // Очистим токен и редиректим на страницу логина
-      localStorage.removeItem('authToken')
       if (typeof window !== 'undefined') {
+        localStorage.removeItem('authToken')
         window.location.href = '/auth/login'
       }
     }
