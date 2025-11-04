@@ -4,7 +4,8 @@ import { ReactNode } from "react";
 
 import { cn } from "@/shared/lib/utils";
 
-import { Sidebar, SidebarProvider, SidebarTrigger } from "./sidebar";
+import { Sidebar, SidebarProvider } from "./sidebar";
+import { Header } from "./header";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -14,25 +15,18 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children, className }: DashboardLayoutProps) {
   return (
     <SidebarProvider>
-      <div className="flex h-screen bg-background">
-        <Sidebar />
+      <div className="flex h-screen flex-col bg-muted/20">
+        {/* Global top header (above sidebar and content) */}
+        <div className="p-3 lg:p-4">
+          <Header />
+        </div>
 
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Mobile header */}
-          <div className="flex h-16 items-center px-4 border-b lg:hidden">
-            <SidebarTrigger />
-            <div className="ml-4 flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">
-                  A
-                </span>
-              </div>
-              <span className="font-semibold">Admin Panel</span>
-            </div>
-          </div>
+        {/* Content row: sidebar + page content */}
+        <div className="flex min-h-0 flex-1">
+          <Sidebar />
 
           {/* Main content */}
-          <main className={cn("flex-1 overflow-y-auto", className)}>
+          <main className={cn("flex-1 overflow-y-auto p-4 lg:p-6", className)}>
             {children}
           </main>
         </div>

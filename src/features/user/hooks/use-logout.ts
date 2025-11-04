@@ -12,11 +12,18 @@ export function useLogout() {
   const { mutate: logout, isPending } = useMutation({
     mutationFn: () => authService.logout(),
     onSuccess: () => {
+      // Очищаем токен из localStorage
+      localStorage.removeItem('authToken');
+      
       toast.success("Logged out successfully");
       router.push("/auth/login");
     },
     onError: () => {
+      // Даже при ошибке API очищаем токен локально
+      localStorage.removeItem('authToken');
+      
       toast.error("Failed to logout");
+      router.push("/auth/login");
     },
   });
 

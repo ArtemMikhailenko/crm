@@ -9,16 +9,15 @@ import { toastMessageHandler } from "@/shared/utils";
 export const useRegister = () => {
   const { mutate: register, isPending: isRegisterPending } = useMutation({
     mutationKey: ["register"],
-    mutationFn: ({
-      values,
-      recaptcha,
-    }: {
-      values: RegisterSchemaType;
-      recaptcha: string;
-    }) => {
-      return authService.register(values, recaptcha);
+    mutationFn: ({ values }: { values: RegisterSchemaType }) => {
+      return authService.register(values);
     },
-    onSuccess: () => {
+    onSuccess: (data: any) => {
+      // Устанавливаем токен в localStorage после успешной регистрации (если есть)
+      if (data.data?.accessToken || data.data?.token) {
+        localStorage.setItem('authToken', data.data.accessToken || data.data.token);
+      }
+      
       toast.success("User registered successfully", {
         description: "Please check your email for verification",
       });

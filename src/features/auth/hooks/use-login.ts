@@ -14,14 +14,8 @@ export const useLogin = (setIsShowCode: Dispatch<SetStateAction<boolean>>) => {
   const router = useRouter();
   const { mutate: login, isPending: isLoginPending } = useMutation({
     mutationKey: ["login"],
-    mutationFn: ({
-      values,
-      recaptcha,
-    }: {
-      values: LoginSchemaType;
-      recaptcha: string;
-    }) => {
-      return authService.login(values, recaptcha);
+    mutationFn: ({ values }: { values: LoginSchemaType }) => {
+      return authService.login(values);
     },
     onSuccess: (data: any) => {
       if (data.message) {
@@ -30,8 +24,13 @@ export const useLogin = (setIsShowCode: Dispatch<SetStateAction<boolean>>) => {
         });
         setIsShowCode(true);
       } else {
+        // Устанавливаем токен в localStorage после успешного логина
+        if (data.data?.accessToken || data.data?.token) {
+          localStorage.setItem('authToken', data.data.accessToken || data.data.token);
+        }
+        
         toast.success("Login successful");
-        router.push("/dashboard/settings");
+        router.push("/dashboard");
       }
     },
     onError: error => {

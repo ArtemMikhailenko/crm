@@ -8,21 +8,13 @@ import { User } from "@/features/auth/types";
 import { api } from "@/shared/api";
 
 class AuthService {
-  public async register(body: RegisterSchemaType, recaptcha: string) {
-    const headers = recaptcha ? { recaptcha } : undefined;
-
-    const response = await api.post<User>(AUTH_URLS.register, body, {
-      headers,
-    });
-
+  public async register(body: RegisterSchemaType) {
+    const response = await api.post<User>(AUTH_URLS.register, body);
     return response;
   }
 
-  public async login(body: LoginSchemaType, recaptcha: string) {
-    const headers = recaptcha ? { recaptcha } : undefined;
-
-    const response = await api.post<User>(AUTH_URLS.login, body, { headers });
-
+  public async login(body: LoginSchemaType) {
+    const response = await api.post<User>(AUTH_URLS.login, body);
     return response;
   }
 

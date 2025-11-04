@@ -5,11 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import ReCAPTCHA from "react-google-recaptcha";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-
-import { env } from "@/env";
 import { useLogin } from "@/features/auth/hooks";
 import { type LoginSchemaType, loginSchema } from "@/features/auth/schemas";
 
@@ -26,7 +22,6 @@ import {
 } from "@/shared/ui";
 
 export function LoginForm() {
-  const [recaptcha, setRecaptcha] = useState<string | null>(null);
   const [isShowCode, setIsShowCode] = useState(false);
 
   const { login, isLoginPending } = useLogin(setIsShowCode);
@@ -34,19 +29,14 @@ export function LoginForm() {
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "a.creatuse@gmail.com",
-      password: "MyPass123!",
+      email: "",
+      password: "",
       token: "",
     },
   });
 
   const onSubmit = (values: LoginSchemaType) => {
-    if (!recaptcha) {
-      toast.error("Please verify you are human");
-      return;
-    }
-
-    login({ values, recaptcha });
+    login({ values });
   };
 
   return (
@@ -116,12 +106,6 @@ export function LoginForm() {
             />
           </>
         )}
-        <div className="flex items-center justify-center">
-          <ReCAPTCHA
-            sitekey={env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
-            onChange={setRecaptcha}
-          />
-        </div>
         <Button type="submit" className="w-full" disabled={isLoginPending}>
           Login
         </Button>

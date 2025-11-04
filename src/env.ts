@@ -19,6 +19,7 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_RECAPTCHA_SITE_KEY: z.string().min(1),
+    NEXT_PUBLIC_SERVER_URL: z.string().url(),
   },
 
   /**
@@ -29,6 +30,7 @@ export const env = createEnv({
     SERVER_URL: process.env.SERVER_URL,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_RECAPTCHA_SITE_KEY: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+    NEXT_PUBLIC_SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL,
   },
 
   /**
