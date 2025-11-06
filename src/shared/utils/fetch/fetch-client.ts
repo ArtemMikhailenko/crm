@@ -1,6 +1,5 @@
 import { FetchError } from "./fetch-error";
 import { RequestOptions, TypeSearchParams } from "./fetch-types";
-import { authToken } from "../auth-token";
 
 export class FetchClient {
   private baseUrl: string;
@@ -53,10 +52,6 @@ export class FetchClient {
       url += this.createSearchParams(options.params);
     }
 
-    // Добавляем токен из localStorage к заголовкам
-    const token = authToken.get();
-    const authHeaders: Record<string, string> = token ? { 'Authorization': `Bearer ${token}` } : {};
-
     const config: RequestInit = {
       ...options,
       ...(!!this.options && { ...this.options }),
@@ -64,7 +59,6 @@ export class FetchClient {
       headers: {
         ...(!!options?.headers && options.headers),
         ...this.headers,
-        ...authHeaders,
       },
     };
 

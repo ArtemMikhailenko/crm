@@ -18,13 +18,42 @@ apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
       config.headers.Authorization = `Bearer ${token}`
     }
   }
+  
+  // Логирование запроса для отладки
+  console.log('🔵 API Request:', {
+    method: config.method?.toUpperCase(),
+    url: config.url,
+    baseURL: config.baseURL,
+    fullURL: `${config.baseURL}${config.url}`,
+    data: config.data,
+    headers: config.headers,
+  })
+  
   return config
 })
 
 // Interceptor для обработки ошибок
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => response,
+  (response: AxiosResponse) => {
+    // Логирование успешного ответа
+    console.log('🟢 API Response:', {
+      method: response.config.method?.toUpperCase(),
+      url: response.config.url,
+      status: response.status,
+      data: response.data,
+    })
+    return response
+  },
   (error: AxiosError) => {
+    // Логирование ошибки
+    console.error('🔴 API Error:', {
+      method: error.config?.method?.toUpperCase(),
+      url: error.config?.url,
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message,
+    })
+    
     if (error.response?.status === 401) {
       // Очистим токен и редиректим на страницу логина
       if (typeof window !== 'undefined') {
