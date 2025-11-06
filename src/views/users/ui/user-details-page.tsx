@@ -96,7 +96,11 @@ export function UserDetailsPage({ userId }: Props) {
               onClick={() => setIsEditModalOpen(true)}
               className="grid h-9 w-9 place-items-center rounded-full border border-[#aab8c2]" 
               aria-label="More"
-            />
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                </svg>
+            </button>
           </div>
 
           {/* Contact + company */}
@@ -267,15 +271,7 @@ export function UserDetailsPage({ userId }: Props) {
               >
                 Add new
               </Button>
-              <button 
-                onClick={() => setIsVacationsModalOpen(true)}
-                className="grid h-9 w-9 place-items-center rounded-full border border-[#aab8c2] hover:bg-slate-50" 
-                aria-label="Edit vacations"
-              >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                </svg>
-              </button>
+              
             </div>
           </div>
           <div className="space-y-4">
