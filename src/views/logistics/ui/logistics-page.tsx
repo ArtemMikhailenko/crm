@@ -66,7 +66,7 @@ export function LogisticsPage() {
           <div className="flex items-end gap-2">
             <div className="relative w-[1200px]">
               <Input
-                placeholder="Поиск"
+                placeholder="Search"
                 className={cn(
                   "h-[49px] rounded-[48px] border-[#ccd5dc] bg-white pl-11 text-[14px] text-[#2d3145]",
                   "placeholder:text-[#2d3145]"

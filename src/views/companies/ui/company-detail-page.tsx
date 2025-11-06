@@ -217,7 +217,7 @@ export function CompanyDetailPage({ companyId }: CompanyDetailPageProps) {
   };
 
   const handleDeleteContact = (contactId: string) => {
-    if (confirm('Вы уверены, что хотите удалить этот контакт?')) {
+    if (confirm('Are you sure, you want to delete this contact?')) {
       deleteContactMutation.mutate({
         companyId: company.id,
         contactId,
@@ -238,7 +238,7 @@ export function CompanyDetailPage({ companyId }: CompanyDetailPageProps) {
     e.preventDefault();
     
     if (!selectedFile || !documentTitle) {
-      toast.error('Выберите файл и введите название');
+      toast.error('Select file and enter name');
       return;
     }
 
@@ -268,7 +268,7 @@ export function CompanyDetailPage({ companyId }: CompanyDetailPageProps) {
   };
 
   const handleDeleteDocument = (documentId: string) => {
-    if (confirm('Вы уверены, что хотите удалить этот документ?')) {
+    if (confirm('Are you sure, you want to delete this document?')) {
       deleteDocumentMutation.mutate({
         companyId: company.id,
         documentId,
@@ -327,7 +327,7 @@ export function CompanyDetailPage({ companyId }: CompanyDetailPageProps) {
   };
 
   const handleDeleteProject = (projectId: string) => {
-    if (confirm('Вы уверены, что хотите удалить этот проект?')) {
+    if (confirm('Are you sure, you want to delete this project?')) {
       deleteProjectMutation.mutate(projectId);
     }
   };
@@ -410,7 +410,7 @@ export function CompanyDetailPage({ companyId }: CompanyDetailPageProps) {
                   </div>
                 </div>
 
-                {/* Documents Section - теперь часть одного блока */}
+                {/* Documents Section - now part of one block */}
                 <div className="border-t pt-8">
                   <div className="space-y-4">
                     {/* Header */}
@@ -445,7 +445,7 @@ export function CompanyDetailPage({ companyId }: CompanyDetailPageProps) {
                     {/* Documents Grid */}
                     <div className="flex items-center gap-4">
                       {documentsLoading ? (
-                        <div className="text-sm text-gray-500">Загрузка документов...</div>
+                        <div className="text-sm text-gray-500">Loading documents...</div>
                       ) : documents.length > 0 ? (
                         documents.map((doc, index) => (
                           <div key={doc.id} className="flex flex-col items-center gap-1">
@@ -468,7 +468,7 @@ export function CompanyDetailPage({ companyId }: CompanyDetailPageProps) {
                           </div>
                         ))
                       ) : (
-                        <div className="text-sm text-gray-500">Нет документов</div>
+                        <div className="text-sm text-gray-500">No documents</div>
                       )}
                       <Button 
                         className="ml-4 bg-emerald-600 hover:bg-emerald-700"
@@ -509,19 +509,19 @@ export function CompanyDetailPage({ companyId }: CompanyDetailPageProps) {
                 </div>
 
                 {projectsLoading ? (
-                  <div className="text-center py-8 text-gray-500">Загрузка проектов...</div>
+                  <div className="text-center py-8 text-gray-500">Loading projects...</div>
                 ) : projects.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">Нет проектов</div>
+                  <div className="text-center py-8 text-gray-500">No projects</div>
                 ) : (
                   <div className="overflow-hidden rounded-lg border">
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Дата</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Date</th>
                           <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Project name</th>
                           <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">ID</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Менеджер</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Статус</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Manager</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Status</th>
                           <th className="px-4 py-3 text-left text-sm font-medium text-gray-500"></th>
                         </tr>
                       </thead>
@@ -639,9 +639,9 @@ export function CompanyDetailPage({ companyId }: CompanyDetailPageProps) {
 
                 <div className="space-y-5">
                   {contactsLoading ? (
-                    <div className="text-sm text-gray-500">Загрузка контактов...</div>
+                    <div className="text-sm text-gray-500">Loading contacts...</div>
                   ) : contacts.length === 0 ? (
-                    <div className="text-sm text-gray-500">Нет контактов</div>
+                    <div className="text-sm text-gray-500">No contacts</div>
                   ) : (
                     contacts.map((contact) => (
                       <div key={contact.id} className="flex items-start gap-3">

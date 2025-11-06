@@ -102,7 +102,7 @@ export function EditVacationsForm({ userId, onCancel, onSuccess }: Props) {
   };
 
   const handleDelete = async (vacationId: string) => {
-    if (confirm("Вы уверены, что хотите удалить этот отпуск?")) {
+    if (confirm("Are you sure, что хотите удалить этот отпуск?")) {
       try {
         await deleteVacationMutation.mutateAsync({ vacationId, userId });
       } catch (error) {
@@ -192,7 +192,7 @@ export function EditVacationsForm({ userId, onCancel, onSuccess }: Props) {
                       name="startDate"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Дата начала</FormLabel>
+                          <FormLabel>Start Date</FormLabel>
                           <FormControl>
                             <Input type="date" {...field} />
                           </FormControl>

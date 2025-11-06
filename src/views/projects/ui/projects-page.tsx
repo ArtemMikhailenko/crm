@@ -44,12 +44,12 @@ export function ProjectsPage() {
             {/* Table header band */}
             <div className="grid grid-cols-[160px_280px_160px_280px_1fr] items-center border-b border-[#eff2f5] bg-[#eff2f5] text-[14px] text-[#2d3145]">
               <div className="flex items-center gap-2 px-4 py-3">
-                <span className="text-[#2d3145]">Дата</span>
+                <span className="text-[#2d3145]">Date</span>
               </div>
-              <div className="px-4 py-3">Имя</div>
+              <div className="px-4 py-3">First Name</div>
               <div className="px-4 py-3">ID</div>
-              <div className="px-4 py-3">Ответственный менеджер</div>
-              <div className="px-4 py-3">Комментарий</div>
+              <div className="px-4 py-3">Responsible Manager</div>
+              <div className="px-4 py-3">Comment</div>
             </div>
 
             {/* Body */}

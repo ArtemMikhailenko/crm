@@ -312,7 +312,7 @@ export function UserDetailsPage({ userId }: Props) {
                 <div key={setting.id} className="flex items-start gap-4">
                   <Switch checked={setting.isEnabled} disabled />
                   <p className="text-sm text-slate-700">
-                    {setting.alertType} уведомления для {setting.category}
+                    {setting.alertType} notifications for {setting.category}
                   </p>
                 </div>
               ))
@@ -322,7 +322,7 @@ export function UserDetailsPage({ userId }: Props) {
                   <div key={i} className="flex items-start gap-4">
                     <Switch defaultChecked={i===0} disabled />
                     <p className="text-sm text-slate-700">
-                      Настройка уведомлений {i + 1}
+                      Notification Setting {i + 1}
                     </p>
                   </div>
                 ))}

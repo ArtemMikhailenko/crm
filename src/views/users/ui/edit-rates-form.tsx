@@ -41,13 +41,13 @@ type Props = {
 };
 
 const DAYS = [
-  { key: 'monday', label: 'Понедельник' },
-  { key: 'tuesday', label: 'Вторник' },
-  { key: 'wednesday', label: 'Среда' },
-  { key: 'thursday', label: 'Четверг' },
-  { key: 'friday', label: 'Пятница' },
-  { key: 'saturday', label: 'Суббота' },
-  { key: 'sunday', label: 'Воскресенье' },
+  { key: 'monday', label: 'Monday' },
+  { key: 'tuesday', label: 'Tuesday' },
+  { key: 'wednesday', label: 'Wednesday' },
+  { key: 'thursday', label: 'Thursday' },
+  { key: 'friday', label: 'Friday' },
+  { key: 'saturday', label: 'Saturday' },
+  { key: 'sunday', label: 'Sunday' },
 ] as const;
 
 export function EditRatesForm({ userId, rates, onCancel, onSuccess }: Props) {
@@ -73,7 +73,7 @@ export function EditRatesForm({ userId, rates, onCancel, onSuccess }: Props) {
     try {
       const workSchedule: any = {};
       
-      // Только добавляем дни с заполненными значениями
+      // Only add days with filled values
       DAYS.forEach(({ key }) => {
         const dayValue = values.workSchedule?.[key];
         if (dayValue?.start && dayValue?.end) {

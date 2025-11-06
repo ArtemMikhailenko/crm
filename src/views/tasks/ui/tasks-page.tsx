@@ -168,14 +168,14 @@ export function TasksPage() {
 
             {/* Header band */}
             <div className="grid grid-cols-[160px_160px_1fr_220px_160px_160px_200px_200px_56px] items-center border-b border-[#e9edf0] bg-[#eff2f5] text-[14px] text-[#2d3145] shadow-[inset_0_-6px_6px_-6px_rgba(0,0,0,0.15)]">
-              <div className="px-4 py-3">Дата создания</div>
-              <div className="border-l border-[#f1f3f4] px-4 py-3">Дата начала</div>
-              <div className="border-l border-[#f1f3f4] px-4 py-3">Комментарий</div>
-              <div className="border-l border-[#f1f3f4] px-4 py-3">Клиент</div>
-              <div className="border-l border-[#f1f3f4] px-4 py-3">ID проекта</div>
-              <div className="border-l border-[#f1f3f4] px-4 py-3">Тип задачи</div>
-              <div className="border-l border-[#f1f3f4] px-4 py-3">Создал</div>
-              <div className="border-l border-[#f1f3f4] px-4 py-3">Ответственный</div>
+              <div className="px-4 py-3">Creation Date</div>
+              <div className="border-l border-[#f1f3f4] px-4 py-3">Start Date</div>
+              <div className="border-l border-[#f1f3f4] px-4 py-3">Comment</div>
+              <div className="border-l border-[#f1f3f4] px-4 py-3">Client</div>
+              <div className="border-l border-[#f1f3f4] px-4 py-3">Project ID</div>
+              <div className="border-l border-[#f1f3f4] px-4 py-3">Task Type</div>
+              <div className="border-l border-[#f1f3f4] px-4 py-3">Created By</div>
+              <div className="border-l border-[#f1f3f4] px-4 py-3">Responsible</div>
               <div className="border-l border-[#f1f3f4] px-2 py-3 text-right">&nbsp;</div>
             </div>
 

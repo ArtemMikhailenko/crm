@@ -158,7 +158,7 @@ export function EditContactsForm({ userId, onCancel, onSuccess }: Props) {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Имя</FormLabel>
+                        <FormLabel>First Name</FormLabel>
                         <FormControl>
                           <Input placeholder="Имя контакта" {...field} />
                         </FormControl>
@@ -173,7 +173,7 @@ export function EditContactsForm({ userId, onCancel, onSuccess }: Props) {
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Телефон</FormLabel>
+                          <FormLabel>Phone</FormLabel>
                           <FormControl>
                             <Input placeholder="+380 (50) 123-4567" {...field} />
                           </FormControl>
@@ -298,7 +298,7 @@ export function EditContactsForm({ userId, onCancel, onSuccess }: Props) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Имя</FormLabel>
+                  <FormLabel>First Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Имя контакта" {...field} />
                   </FormControl>
@@ -313,7 +313,7 @@ export function EditContactsForm({ userId, onCancel, onSuccess }: Props) {
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Телефон</FormLabel>
+                    <FormLabel>Phone</FormLabel>
                     <FormControl>
                       <Input placeholder="+380 (50) 123-4567" {...field} />
                     </FormControl>

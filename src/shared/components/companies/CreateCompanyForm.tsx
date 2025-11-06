@@ -10,12 +10,12 @@ import { Loader2 } from 'lucide-react'
 import type { CreateCompanyRequest } from '../../types/company'
 
 const createCompanySchema = z.object({
-  name: z.string().min(1, 'Название компании обязательно'),
+  name: z.string().min(1, 'Company name is required'),
   type: z.enum(['CUSTOMER', 'SUBCONTRACTOR'], {
-    required_error: 'Тип компании обязателен',
+    required_error: 'Company type is required',
   }),
   description: z.string().optional(),
-  website: z.string().url('Неверный формат URL').optional().or(z.literal('')),
+  website: z.string().url('Invalid URL format').optional().or(z.literal('')),
   address: z.string().optional(),
   city: z.string().optional(),
   postalCode: z.string().optional(),
@@ -35,7 +35,7 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
 
   const form = useForm<CreateCompanyFormData>({
     resolver: zodResolver(createCompanySchema),
-    defaultValues: {
+    defaultValues:{
       name: '',
       type: 'SUBCONTRACTOR',
       description: '',
@@ -43,7 +43,7 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
       address: '',
       city: '',
       postalCode: '',
-      country: 'Украина',
+      country: 'Ukraine',
       vatNumber: '',
     },
   })
@@ -57,7 +57,7 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
       await createCompanyMutation.mutateAsync(companyData)
       onSuccess?.()
     } catch (error) {
-      // Ошибка обрабатывается в хуке
+      // Error is handled in the hook
     }
   }
 
@@ -69,9 +69,9 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Название компании *</FormLabel>
+              <FormLabel>Company Name *</FormLabel>
               <FormControl>
-                <Input placeholder="ООО Стройкомпания" {...field} />
+                <Input placeholder="LLC Construction Company" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -83,14 +83,14 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Тип компании *</FormLabel>
+              <FormLabel>Company Type *</FormLabel>
               <FormControl>
                 <select
                   {...field}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <option value="SUBCONTRACTOR">Субподрядчик</option>
-                  <option value="CUSTOMER">Заказчик</option>
+                  <option value="SUBCONTRACTOR">Subcontractor</option>
+                  <option value="CUSTOMER">Customer</option>
                 </select>
               </FormControl>
               <FormMessage />
@@ -103,12 +103,12 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Описание</FormLabel>
+              <FormLabel>Description</FormLabel>
               <FormControl>
                 <textarea
                   {...field}
                   className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Краткое описание деятельности компании"
+                  placeholder="Brief description of company activities"
                   rows={3}
                 />
               </FormControl>
@@ -123,7 +123,7 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
             name="website"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Веб-сайт</FormLabel>
+                <FormLabel>Website</FormLabel>
                 <FormControl>
                   <Input type="url" placeholder="https://example.com" {...field} />
                 </FormControl>
@@ -137,7 +137,7 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
             name="vatNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>НДС номер</FormLabel>
+                <FormLabel>VAT Number</FormLabel>
                 <FormControl>
                   <Input placeholder="12345678" {...field} />
                 </FormControl>
@@ -152,9 +152,9 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
           name="address"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Адрес</FormLabel>
+              <FormLabel>Address</FormLabel>
               <FormControl>
-                <Input placeholder="ул. Примерная, д. 123" {...field} />
+                <Input placeholder="123 Example Street" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -167,9 +167,9 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
             name="city"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Город</FormLabel>
+                <FormLabel>City</FormLabel>
                 <FormControl>
-                  <Input placeholder="Киев" {...field} />
+                  <Input placeholder="Kyiv" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -181,7 +181,7 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
             name="postalCode"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Почтовый индекс</FormLabel>
+                <FormLabel>Postal Code</FormLabel>
                 <FormControl>
                   <Input placeholder="01001" {...field} />
                 </FormControl>
@@ -195,9 +195,9 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
             name="country"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Страна</FormLabel>
+                <FormLabel>Country</FormLabel>
                 <FormControl>
-                  <Input placeholder="Украина" {...field} />
+                  <Input placeholder="Ukraine" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -212,7 +212,7 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
             onClick={onCancel}
             disabled={createCompanyMutation.isPending}
           >
-            Отмена
+            Cancel
           </Button>
           <Button
             type="submit"
@@ -221,7 +221,7 @@ export const CreateCompanyForm: React.FC<CreateCompanyFormProps> = ({ onSuccess,
             {createCompanyMutation.isPending && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Создать компанию
+            Create Company
           </Button>
         </div>
       </form>

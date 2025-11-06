@@ -28,7 +28,7 @@ export function Modal({ open, onClose, title, children, footer, className }: Mod
 
   useEffect(() => {
     if (open) {
-      // Блокируем скролл body когда модалка открыта
+      // Block body scroll when modal is open
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';

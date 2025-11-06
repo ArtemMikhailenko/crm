@@ -125,15 +125,15 @@ export function CustomerDetailsPage() {
 
             {/* Header */}
             <div className="mt-2 grid grid-cols-[118px_1px_163px_1px_163px_1px_163px_1px_163px] items-center text-[14px]">
-              <HeaderCell className="bg-[#eff2f5]">Дата</HeaderCell>
+              <HeaderCell className="bg-[#eff2f5]">Date</HeaderCell>
               <Divider />
               <HeaderCell className="bg-[#eff2f5]">Project name</HeaderCell>
               <Divider />
               <HeaderCell className="bg-[#eff2f5]">ID</HeaderCell>
               <Divider />
-              <HeaderCell className="bg-[#eff2f5]">Менеджер</HeaderCell>
+              <HeaderCell className="bg-[#eff2f5]">Manager</HeaderCell>
               <Divider />
-              <HeaderCell className="bg-[#eff2f5]">Статус</HeaderCell>
+              <HeaderCell className="bg-[#eff2f5]">Status</HeaderCell>
             </div>
 
             {/* Rows */}

@@ -61,7 +61,7 @@ export const CompaniesList: React.FC<CompaniesListProps> = ({ activeTab = 'all' 
   }
 
   const handleDeleteCompany = async (companyId: string, companyName: string) => {
-    if (window.confirm(`Вы уверены, что хотите удалить компанию "${companyName}"?`)) {
+    if (window.confirm(`Are you sure you want to delete company "${companyName}"?`)) {
       deleteCompanyMutation.mutate(companyId)
     }
   }

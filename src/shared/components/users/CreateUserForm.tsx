@@ -11,11 +11,11 @@ import { Loader2 } from 'lucide-react'
 import type { CreateUserRequest } from '../../types/user'
 
 const createUserSchema = z.object({
-  email: z.string().email('Неверный формат email'),
-  password: z.string().min(8, 'Пароль должен быть не менее 8 символов'),
+  email: z.string().email('Invalid email format'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
-  displayName: z.string().min(1, 'Отображаемое имя обязательно'),
+  displayName: z.string().min(1, 'Display name is required'),
   phone: z.string().optional(),
   timezone: z.string().optional(),
   companyId: z.string().optional(),
@@ -68,9 +68,9 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({ onSuccess, onCan
             name="firstName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Имя</FormLabel>
+                <FormLabel>First Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Иван" {...field} />
+                  <Input placeholder="John" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -81,9 +81,9 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({ onSuccess, onCan
             name="lastName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Фамилия</FormLabel>
+                <FormLabel>Last Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Иванов" {...field} />
+                  <Input placeholder="Doe" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -96,9 +96,9 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({ onSuccess, onCan
           name="displayName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Отображаемое имя *</FormLabel>
+              <FormLabel>Display Name *</FormLabel>
               <FormControl>
-                <Input placeholder="Иван Иванов" {...field} />
+                <Input placeholder="John Doe" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -124,7 +124,7 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({ onSuccess, onCan
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Пароль *</FormLabel>
+              <FormLabel>Password *</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="••••••••" {...field} />
               </FormControl>
@@ -138,7 +138,7 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({ onSuccess, onCan
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Телефон</FormLabel>
+              <FormLabel>Phone</FormLabel>
               <FormControl>
                 <Input placeholder="+380501234567" {...field} />
               </FormControl>
@@ -176,7 +176,7 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({ onSuccess, onCan
           name="timezone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Часовой пояс</FormLabel>
+              <FormLabel>Timezone</FormLabel>
               <FormControl>
                 <select
                   {...field}
