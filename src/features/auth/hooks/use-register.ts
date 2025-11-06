@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { RegisterSchemaType } from "@/features/auth/schemas";
 import { authService } from "@/features/auth/services";
 
-import { toastMessageHandler } from "@/shared/utils";
+import { toastMessageHandler, authToken } from "@/shared/utils";
 
 export const useRegister = () => {
   const router = useRouter();
@@ -15,9 +15,17 @@ export const useRegister = () => {
       return authService.register(values);
     },
     onSuccess: (data: any) => {
+      console.log("Register response:", data);
+      console.log("Register response structure:", JSON.stringify(data, null, 2));
+      
       // Устанавливаем токен в localStorage после успешной регистрации (если есть)
-      if (data.data?.accessToken || data.data?.token) {
-        localStorage.setItem('authToken', data.data.accessToken || data.data.token);
+      const token = data.accessToken || data.data?.accessToken || data.token || data.data?.token;
+      
+      if (token) {
+        console.log("Saving token to localStorage:", token);
+        authToken.set(token);
+      } else {
+        console.log("No token found in registration response");
       }
       
       toast.success("User registered successfully", {
