@@ -219,9 +219,11 @@ export function Sidebar({ className }: SidebarProps) {
       <div
         className={cn(
           // Fixed on mobile, relative on desktop. Enable vertical scroll so content never overflows viewport.
-          "fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-white/90 backdrop-blur border-r border-[#e6ebf0] transition-all duration-300 lg:relative lg:translate-x-0 rounded-r-[24px] shadow-sm overflow-visible min-h-0",
-          // Always-collapsed width on desktop
-          "w-24",
+          "fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-white/90 backdrop-blur border-r border-[#e6ebf0] transition-all duration-300 lg:relative lg:translate-x-0 rounded-r-[24px] shadow-sm min-h-0",
+          // Always-collapsed width on desktop - use flex-shrink-0 to prevent shrinking
+          "w-24 flex-shrink-0",
+          // Overflow handling: hidden for sidebar itself, but allow submenus to escape
+          "overflow-y-auto overflow-x-visible",
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           className
         )}>

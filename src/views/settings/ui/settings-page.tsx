@@ -26,7 +26,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/ui/card";
-import { DashboardLayout } from "@/shared/ui/dashboard-layout";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Separator } from "@/shared/ui/separator";
@@ -40,15 +39,14 @@ export function SettingsPage() {
   });
 
   return (
-    <DashboardLayout>
-      <div className="p-4 lg:p-6">
-        <div className="mx-auto max-w-6xl space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-            <p className="text-muted-foreground">
-              Manage your account settings and preferences.
-            </p>
-          </div>
+    <div className="p-4 lg:p-6">
+      <div className="mx-auto max-w-6xl space-y-6">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+          <p className="text-muted-foreground">
+            Manage your account settings and preferences.
+          </p>
+        </div>
 
           <div className="grid gap-6">
             {/* Profile Settings */}
@@ -255,6 +253,5 @@ export function SettingsPage() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
   );
 }
