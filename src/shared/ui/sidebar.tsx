@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, createContext, useContext, useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -200,16 +201,44 @@ export function Sidebar({ className }: SidebarProps) {
   const { isMobileOpen, setIsMobileOpen } = useSidebar();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const submenuRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const submenuPanelRef = useRef<HTMLDivElement>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [submenuTop, setSubmenuTop] = useState<number>(0);
+  const [submenuLeft, setSubmenuLeft] = useState<number>(0);
 
-  const toggleSubmenu = (itemName: string) => {
-    setOpenSubmenu(openSubmenu === itemName ? null : itemName);
+  const updateSubmenuPosition = (el: HTMLElement | null) => {
+    if (!el) return;
+    const itemRect = el.getBoundingClientRect();
+    const sideRect = containerRef.current?.getBoundingClientRect();
+    const top = Math.max(8, itemRect.top);
+    const left = (sideRect?.right ?? 96) + 16; // sidebar right edge + gap
+    setSubmenuTop(top);
+    setSubmenuLeft(left);
+  };
+
+  const toggleSubmenu = (e: React.MouseEvent<HTMLElement>, itemName: string) => {
+    if (openSubmenu === itemName) {
+      setOpenSubmenu(null);
+      setAnchorEl(null);
+      return;
+    }
+    setOpenSubmenu(itemName);
+    const el = e.currentTarget as HTMLElement;
+    setAnchorEl(el);
+    updateSubmenuPosition(el);
   };
 
   // Close submenu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (submenuRef.current && !submenuRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const clickedInsideNav = submenuRef.current?.contains(target);
+      const clickedInsidePanel = submenuPanelRef.current?.contains(target);
+      if (!clickedInsideNav && !clickedInsidePanel) {
         setOpenSubmenu(null);
+        setAnchorEl(null);
       }
     };
 
@@ -221,6 +250,20 @@ export function Sidebar({ className }: SidebarProps) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [openSubmenu]);
+
+  // Recalculate panel position on resize/scroll of sidebar scroll area
+  useEffect(() => {
+    if (!openSubmenu) return;
+    const update = () => updateSubmenuPosition(anchorEl);
+    update();
+    window.addEventListener('resize', update);
+    const el = scrollAreaRef.current;
+    el?.addEventListener('scroll', update, { passive: true });
+    return () => {
+      window.removeEventListener('resize', update);
+      el?.removeEventListener('scroll', update);
+    };
+  }, [openSubmenu, anchorEl]);
 
   return (
     <>
@@ -236,15 +279,16 @@ export function Sidebar({ className }: SidebarProps) {
       <div
         className={cn(
           // Fixed on mobile, relative on desktop. Enable vertical scroll so content never overflows viewport.
-          "fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-white/90 backdrop-blur border-r border-[#e6ebf0] transition-all duration-300 lg:relative lg:translate-x-0 rounded-r-[24px] shadow-sm min-h-0",
+          "fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-white/90 backdrop-blur border-r border-[#e6ebf0] transition-all duration-300 lg:sticky lg:top-0 lg:translate-x-0 lg:h-screen rounded-r-[24px] shadow-sm min-h-0",
           // Always-collapsed width on desktop - use flex-shrink-0 to prevent shrinking
           "w-24 flex-shrink-0",
-          // ВАЖНО: overflow-visible чтобы подменю было видно
-          "overflow-y-auto",
+          // Контейнер не скроллится по оси Y; скролл будет у внутреннего блока
+          "overflow-hidden",
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           className
         )}
-        style={{ overflow: 'visible' }}
+        style={{ overflowX: 'visible' }}
+        ref={containerRef}
       >
         {/* Mobile close button (no logo in sidebar) */}
         <Button
@@ -257,8 +301,10 @@ export function Sidebar({ className }: SidebarProps) {
 
         {/* No header/profile block in compact mode */}
 
-        {/* Navigation: stacked icon with label below */}
-        <nav className="flex-1 grid grid-cols-1 auto-rows-min gap-1 p-2" ref={submenuRef} style={{ overflow: 'visible' }}>
+  {/* Scrollable content area: includes nav + bottom block so ничего не вылазит вниз */}
+  <div ref={scrollAreaRef} className="flex-1 min-h-0 overflow-y-auto" style={{ overflowX: 'hidden' }}>
+  {/* Navigation: stacked icon with label below */}
+  <nav className="grid grid-cols-1 auto-rows-min gap-1 p-2" ref={submenuRef}>
           {navigation.map(item => {
             const Icon = item.icon;
             const isActive = pathname === item.href || (item.submenu && item.submenu.some(sub => pathname === sub.href));
@@ -269,7 +315,7 @@ export function Sidebar({ className }: SidebarProps) {
               <div key={item.name} className="relative">
                 {hasSubmenu ? (
                   <button
-                    onClick={() => toggleSubmenu(item.name)}
+                    onClick={(e) => toggleSubmenu(e, item.name)}
                     className={cn(
                       "w-full flex flex-col items-center justify-center rounded-[16px] py-3 text-xs font-medium transition-colors relative",
                       isActive || isSubmenuOpen ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
@@ -289,49 +335,56 @@ export function Sidebar({ className }: SidebarProps) {
                   </Link>
                 )}
                 
-                {/* Submenu - flies out to the right */}
-                {hasSubmenu && isSubmenuOpen && (
-                  <div 
-                    className={cn(
-                      "absolute left-full top-0 ml-4 z-[100] min-w-[240px] rounded-2xl bg-white border-2 border-slate-200 shadow-2xl py-3 px-3",
-                      "animate-in slide-in-from-left-2 duration-200"
-                    )}
-                    style={{ 
-                      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
-                    }}
-                  >
-                    {/* Back button */}
-                    <div className="px-4 py-3 mb-2 flex items-center gap-3 text-slate-700 border-b-2 border-slate-100">
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                      </svg>
-                      <span className="text-base font-semibold">Back</span>
-                    </div>
-                    
-                    <div className="space-y-2 mt-2">
-                      {item.submenu!.map(subItem => {
-                        const SubIcon = subItem.icon;
-                        const isSubActive = pathname === subItem.href;
-                        
-                        return (
-                          <Link
-                            key={subItem.name}
-                            href={subItem.href}
-                            onClick={() => setOpenSubmenu(null)}
-                            className={cn(
-                              "flex items-center gap-4 rounded-xl px-5 py-4 text-base font-medium transition-all duration-200",
-                              isSubActive 
-                                ? "bg-slate-900 text-white shadow-md" 
-                                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900 hover:shadow-sm"
-                            )}>
-                            <SubIcon className="h-5 w-5" />
-                            <span>{subItem.name}</span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                {/* Submenu rendered via portal into body to avoid clipping by sidebar stacking context */}
+                {hasSubmenu && isSubmenuOpen && typeof window !== 'undefined' &&
+                  createPortal(
+                    <div
+                      ref={submenuPanelRef}
+                      className={cn(
+                        "fixed z-[5000] min-w-[240px] max-h-[calc(100vh-16px)] overflow-y-auto rounded-2xl bg-white border-2 border-slate-200 shadow-2xl py-3 px-3",
+                        "animate-in slide-in-from-left-2 duration-200"
+                      )}
+                      style={{
+                        left: submenuLeft,
+                        top: submenuTop,
+                        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)'
+                      }}
+                    >
+                      {/* Back button */}
+                      <div className="px-4 py-3 mb-2 flex items-center gap-3 text-slate-700 border-b-2 border-slate-100">
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        <span className="text-base font-semibold">Back</span>
+                      </div>
+
+                      <div className="space-y-2 mt-2">
+                        {item.submenu!.map(subItem => {
+                          const SubIcon = subItem.icon;
+                          const isSubActive = pathname === subItem.href;
+
+                          return (
+                            <Link
+                              key={subItem.name}
+                              href={subItem.href}
+                              onClick={() => setOpenSubmenu(null)}
+                              className={cn(
+                                "flex items-center gap-4 rounded-xl px-5 py-4 text-base font-medium transition-all duration-200",
+                                isSubActive
+                                  ? "bg-slate-900 text-white shadow-md"
+                                  : "text-slate-700 hover:bg-slate-100 hover:text-slate-900 hover:shadow-sm"
+                              )}
+                            >
+                              <SubIcon className="h-5 w-5" />
+                              <span>{subItem.name}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>,
+                    document.body
+                  )
+                }
               </div>
             );
           })}
@@ -364,6 +417,7 @@ export function Sidebar({ className }: SidebarProps) {
             <LogOut className="h-6 w-6" />
             <span className="mt-2">Logout</span>
           </button>
+        </div>
         </div>
       </div>
     </>
