@@ -84,3 +84,42 @@ export const useDeleteProject = () => {
     },
   })
 }
+
+// Subcontractors hooks
+export const useProjectSubcontractors = (projectId: string) => {
+  return useQuery({
+    queryKey: ['projectSubcontractors', projectId],
+    queryFn: () => ProjectsService.getProjectSubcontractors(projectId),
+    enabled: !!projectId,
+  })
+}
+
+export const useAddProjectSubcontractors = (projectId: string) => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (ids: string[]) => ProjectsService.addProjectSubcontractors(projectId, ids),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projectSubcontractors', projectId] })
+      toast.success('Субподрядчики добавлены')
+    },
+    onError: (error: any) => {
+      const message = handleApiError(error)
+      toast.error(message)
+    },
+  })
+}
+
+export const useRemoveProjectSubcontractor = (projectId: string) => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (companyId: string) => ProjectsService.removeProjectSubcontractor(projectId, companyId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projectSubcontractors', projectId] })
+      toast.success('Субподрядчик удалён')
+    },
+    onError: (error: any) => {
+      const message = handleApiError(error)
+      toast.error(message)
+    },
+  })
+}

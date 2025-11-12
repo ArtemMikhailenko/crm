@@ -4,6 +4,7 @@ export * from "./badge";
 export * from "./button";
 export * from "./card";
 export * from "./dashboard-layout";
+export * from "./dialog";
 export * from "./header";
 export * from "../../features/auth/ui/auth-socials";
 export * from "./form";

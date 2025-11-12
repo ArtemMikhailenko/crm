@@ -14,7 +14,31 @@ class AuthService {
   }
 
   public async login(body: LoginSchemaType) {
-    const response = await api.post<User>(AUTH_URLS.login, body);
+    console.log("📤 Sending login request:", {
+      url: AUTH_URLS.login,
+      body: {
+        email: body.email,
+        hasPassword: !!body.password,
+        hasToken: !!body.token,
+        hasRecaptcha: !!body.recaptcha,
+      }
+    });
+    
+    // The backend may return either a successful login payload or a 2FA prompt payload
+    const response = await api.post<
+      | { accessToken: string; user: User; token?: string }
+      | { twoFactorRequired: true; message: string; ttlMinutes: number }
+    >(AUTH_URLS.login, body);
+    
+    console.log("📥 Login response received:", response);
+    return response;
+  }
+
+  public async resendTwoFactor(body: { email: string }) {
+    const response = await api.post<{ message: string }>(
+      AUTH_URLS.twoFactorResend,
+      body
+    );
     return response;
   }
 

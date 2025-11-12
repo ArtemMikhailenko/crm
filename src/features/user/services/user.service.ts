@@ -48,6 +48,18 @@ class UserService {
 
     return response;
   }
+
+  public async updateUser(userId: string, data: Partial<User>) {
+    const response = await api.patch<User>(`users/${userId}`, data);
+    return response;
+  }
+
+  public async toggle2FA(userId: string, enabled: boolean) {
+    const response = await api.patch<User>(`users/${userId}`, {
+      isTwoFactorEnabled: enabled,
+    });
+    return response;
+  }
 }
 
 export const userService = new UserService();

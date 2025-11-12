@@ -113,6 +113,23 @@ const navigation = [
     href: "/dashboard/users",
     icon: Users,
     badge: "24",
+    submenu: [
+      {
+        name: "Members",
+        href: "/dashboard/users",
+        icon: Users,
+      },
+      {
+        name: "Working hours",
+        href: "/dashboard/users/working-hours",
+        icon: Calendar,
+      },
+      {
+        name: "Contractors",
+        href: "/dashboard/users/contractors",
+        icon: Building2,
+      },
+    ],
   },
   {
     name: "Suppliers",
@@ -222,11 +239,13 @@ export function Sidebar({ className }: SidebarProps) {
           "fixed left-0 top-0 bottom-0 z-50 flex flex-col bg-white/90 backdrop-blur border-r border-[#e6ebf0] transition-all duration-300 lg:relative lg:translate-x-0 rounded-r-[24px] shadow-sm min-h-0",
           // Always-collapsed width on desktop - use flex-shrink-0 to prevent shrinking
           "w-24 flex-shrink-0",
-          // Overflow handling: hidden for sidebar itself, but allow submenus to escape
-          "overflow-y-auto overflow-x-visible",
+          // ВАЖНО: overflow-visible чтобы подменю было видно
+          "overflow-y-auto",
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           className
-        )}>
+        )}
+        style={{ overflow: 'visible' }}
+      >
         {/* Mobile close button (no logo in sidebar) */}
         <Button
           variant="ghost"
@@ -239,7 +258,7 @@ export function Sidebar({ className }: SidebarProps) {
         {/* No header/profile block in compact mode */}
 
         {/* Navigation: stacked icon with label below */}
-        <nav className="flex-1 grid grid-cols-1 auto-rows-min gap-1 p-2" ref={submenuRef}>
+        <nav className="flex-1 grid grid-cols-1 auto-rows-min gap-1 p-2" ref={submenuRef} style={{ overflow: 'visible' }}>
           {navigation.map(item => {
             const Icon = item.icon;
             const isActive = pathname === item.href || (item.submenu && item.submenu.some(sub => pathname === sub.href));
@@ -274,19 +293,22 @@ export function Sidebar({ className }: SidebarProps) {
                 {hasSubmenu && isSubmenuOpen && (
                   <div 
                     className={cn(
-                      "absolute left-full top-0 ml-2 z-50 min-w-[200px] rounded-[16px] bg-white border border-[#e6ebf0] shadow-xl py-2 px-2",
+                      "absolute left-full top-0 ml-4 z-[100] min-w-[240px] rounded-2xl bg-white border-2 border-slate-200 shadow-2xl py-3 px-3",
                       "animate-in slide-in-from-left-2 duration-200"
                     )}
+                    style={{ 
+                      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+                    }}
                   >
                     {/* Back button */}
-                    <div className="px-3 py-2 mb-1 flex items-center gap-2 text-slate-600 border-b border-slate-100">
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="px-4 py-3 mb-2 flex items-center gap-3 text-slate-700 border-b-2 border-slate-100">
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                       </svg>
-                      <span className="text-sm font-medium">Back</span>
+                      <span className="text-base font-semibold">Back</span>
                     </div>
                     
-                    <div className="space-y-1 mt-2">
+                    <div className="space-y-2 mt-2">
                       {item.submenu!.map(subItem => {
                         const SubIcon = subItem.icon;
                         const isSubActive = pathname === subItem.href;
@@ -297,12 +319,12 @@ export function Sidebar({ className }: SidebarProps) {
                             href={subItem.href}
                             onClick={() => setOpenSubmenu(null)}
                             className={cn(
-                              "flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors",
+                              "flex items-center gap-4 rounded-xl px-5 py-4 text-base font-medium transition-all duration-200",
                               isSubActive 
-                                ? "bg-slate-900 text-white" 
-                                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                                ? "bg-slate-900 text-white shadow-md" 
+                                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900 hover:shadow-sm"
                             )}>
-                            <SubIcon className="h-4 w-4" />
+                            <SubIcon className="h-5 w-5" />
                             <span>{subItem.name}</span>
                           </Link>
                         );

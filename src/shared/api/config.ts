@@ -1,4 +1,7 @@
+import { env } from '@/env'
+
 export const API_CONFIG = {
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4001',
+  // Align axios client base URL with the app-wide server URL
+  baseURL: env.NEXT_PUBLIC_SERVER_URL,
   timeout: 10000,
 }

@@ -4,19 +4,15 @@ import React, { useMemo, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Search, ChevronDown, MoreVertical, Share2, Download, Columns3, Flag, Plus } from 'lucide-react';
+import { useUsers } from '@/shared/hooks/useUsers';
+import type { User } from '@/shared/types/user';
+import { WeeklyBars, Day } from '@/shared/ui/weekly-bars';
 
-type Employee = {
-  id: string;
-  name: string;
-  role: string;
-  avatar?: string;
-};
-
+// Типы для локального отображения отпусков (пока используем простую модель)
 type VacationType = 'vacation' | 'weekend' | 'sick-leave';
-
-type Vacation = {
+type LocalVacation = {
   id: string;
-  employeeId: string;
+  userId: string;
   month: number; // 0-11 (Jan-Dec)
   startDate: string;
   endDate: string;
@@ -27,64 +23,64 @@ type CompanySchedulesPageProps = {
   companyId: string;
 };
 
-// Mock data matching Figma design
-const MOCK_EMPLOYEES: Employee[] = [
-  { id: '1', name: 'Wade Warren', role: 'Dog Trainer' },
-  { id: '2', name: 'Esther Howard', role: 'President of Sales' },
-  { id: '3', name: 'Cameron Williamson', role: 'Dog Trainer' },
-  { id: '4', name: 'Brooklyn Simmons', role: 'Medical Assistant' },
-  { id: '5', name: 'Leslie Alexander', role: 'Web Designer' },
-  { id: '6', name: 'Guy Hawkins', role: 'Marketing Coordinator' },
-  { id: '7', name: 'Kristin Watson', role: 'Nursing Assistant' },
-  { id: '8', name: 'Cody Fisher', role: 'President of Sales' },
-  { id: '9', name: 'Savannah Nguyen', role: 'Dog Trainer' },
-  { id: '10', name: 'Jenny Wilson', role: 'Medical Assistant' },
-  { id: '11', name: 'Kristin Cooper', role: 'Designer' },
-  { id: '12', name: 'Juanita Flores', role: 'PM' },
-  { id: '13', name: 'Shane Nguyen', role: 'Developer' },
+// TODO: убрать мок отпуска после интеграции массовой загрузки /users/:id/vacations
+const MOCK_VACATIONS: LocalVacation[] = [
+  { id: 'v1', userId: '12', month: 0, startDate: 'Jan 10', endDate: 'Jan 15', type: 'vacation' },
+  { id: 'v2', userId: '12', month: 9, startDate: 'Oct 5', endDate: 'Oct 10', type: 'vacation' },
+  { id: 'v3', userId: '13', month: 2, startDate: 'Mar 15', endDate: 'Mar 26', type: 'weekend' },
+  { id: 'v4', userId: '13', month: 7, startDate: 'Aug 20', endDate: 'Aug 25', type: 'vacation' },
+  { id: 'v5', userId: '10', month: 3, startDate: 'Apr 1', endDate: 'Apr 7', type: 'sick-leave' },
+  { id: 'v6', userId: '11', month: 4, startDate: 'May 10', endDate: 'May 15', type: 'vacation' },
+  { id: 'v7', userId: '11', month: 8, startDate: 'Sep 5', endDate: 'Sep 12', type: 'weekend' },
+  { id: 'v8', userId: '11', month: 10, startDate: 'Nov 20', endDate: 'Nov 25', type: 'vacation' },
+  { id: 'v9', userId: '8', month: 1, startDate: 'Feb 14', endDate: 'Feb 20', type: 'vacation' },
+  { id: 'v10', userId: '9', month: 5, startDate: 'Jun 10', endDate: 'Jun 17', type: 'sick-leave' },
 ];
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-// Vacation legend types
+// Легенда типов отпусков
 const VACATION_TYPES = [
-  { id: 'vacation' as VacationType, label: 'Vacation', color: '#9b87f5' },
-  { id: 'weekend' as VacationType, label: 'Weekend', color: '#7c3aed' },
-  { id: 'sick-leave' as VacationType, label: 'Sick Leave', color: '#79c3b3' },
-];
-
-// Mock vacations data
-const MOCK_VACATIONS: Vacation[] = [
-  { id: 'v1', employeeId: '12', month: 0, startDate: 'Jan 10', endDate: 'Jan 15', type: 'vacation' },
-  { id: 'v2', employeeId: '12', month: 9, startDate: 'Oct 5', endDate: 'Oct 10', type: 'vacation' },
-  { id: 'v3', employeeId: '13', month: 2, startDate: 'March 15', endDate: 'March 26', type: 'weekend' },
-  { id: 'v4', employeeId: '13', month: 7, startDate: 'Aug 20', endDate: 'Aug 25', type: 'vacation' },
-  { id: 'v5', employeeId: '10', month: 3, startDate: 'Apr 1', endDate: 'Apr 7', type: 'sick-leave' },
-  { id: 'v6', employeeId: '11', month: 4, startDate: 'May 10', endDate: 'May 15', type: 'vacation' },
-  { id: 'v7', employeeId: '11', month: 8, startDate: 'Sep 5', endDate: 'Sep 12', type: 'weekend' },
-  { id: 'v8', employeeId: '11', month: 10, startDate: 'Nov 20', endDate: 'Nov 25', type: 'vacation' },
-  { id: 'v9', employeeId: '8', month: 1, startDate: 'Feb 14', endDate: 'Feb 20', type: 'vacation' },
-  { id: 'v10', employeeId: '9', month: 5, startDate: 'Jun 10', endDate: 'Jun 17', type: 'sick-leave' },
+  { id: 'vacation' as VacationType, label: 'Отпуск', color: '#9b87f5' },
+  { id: 'weekend' as VacationType, label: 'Выходные', color: '#7c3aed' },
+  { id: 'sick-leave' as VacationType, label: 'Больничный', color: '#79c3b3' },
 ];
 
 export function CompanySchedulesPage({ companyId }: CompanySchedulesPageProps) {
   const [activeTab, setActiveTab] = useState<'work' | 'vacations'>('work');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCompany, setSelectedCompany] = useState('All companies');
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'subcontractors' | 'internal'>('all');
   const [hoveredVacation, setHoveredVacation] = useState<string | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
-  const filteredEmployees = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return MOCK_EMPLOYEES;
-    return MOCK_EMPLOYEES.filter((e) =>
-      [e.name, e.role, e.id].some((f) => f.toLowerCase().includes(q))
-    );
-  }, [searchQuery]);
+  // Загрузка пользователей (все + субподрядчики). Пагинацию можно добавить позже.
+  const { data: usersResp, isLoading } = useUsers({ search: searchQuery || undefined, limit: 200 });
+  const users: User[] = usersResp?.users || [];
 
-  const getVacationsForEmployee = (employeeId: string, month: number) => {
-    return MOCK_VACATIONS.filter(v => v.employeeId === employeeId && v.month === month);
+  // Фильтрация по типу компании (subcontractor / internal)
+  const filteredUsers = useMemo(() => {
+    let list = users;
+    if (selectedFilter === 'subcontractors') {
+      list = list.filter(u => u.company?.type === 'SUBCONTRACTOR');
+    } else if (selectedFilter === 'internal') {
+      list = list.filter(u => !u.company || u.company.type === 'INTERNAL');
+    }
+    return list;
+  }, [users, selectedFilter]);
+
+  // Применение поиска поверх основного фильтра
+  const searchedUsers = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return filteredUsers;
+    return filteredUsers.filter(u => [u.displayName, u.firstName, u.lastName, u.id, u.company?.name, u.company?.type]
+      .filter(Boolean)
+      .some(val => String(val).toLowerCase().includes(q)));
+  }, [filteredUsers, searchQuery]);
+
+  const getVacationsForUser = (userId: string, month: number) => {
+    // Пока используем мок. Позже заменить на кэшированные данные useUserVacations(userId)
+    return MOCK_VACATIONS.filter(v => v.userId === userId && v.month === month);
   };
 
   const handleVacationHover = (vacationId: string, event: React.MouseEvent) => {
@@ -96,14 +92,57 @@ export function CompanySchedulesPage({ companyId }: CompanySchedulesPageProps) {
     setHoveredVacation(vacationId);
   };
 
+  // Преобразование рабочего расписания пользователя в данные для WeeklyBars
+  const scheduleToWeeklyBars = (user: User): Day[] => {
+    const raw = user.workSchedule || {};
+    const dayKeys: (keyof typeof raw)[] = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+    const result: Day[] = dayKeys.map(dayKey => {
+      const segment = raw[dayKey];
+      if (!segment?.start || !segment?.end) {
+        return { light: 70, dark: 30 }; // нет данных – placeholder
+      }
+      const parseHour = (str: string) => {
+        const m = str.match(/(\d{1,2})/);
+        return m ? Math.min(23, parseInt(m[1], 10)) : 0;
+      };
+      const startH = parseHour(segment.start);
+      const endH = parseHour(segment.end);
+      const worked = Math.max(0, endH - startH);
+      // Используем 24 часа как базу: dark = рабочее время, light = остальное
+      const darkPct = Math.round((worked / 24) * 100);
+      const lightPct = 100 - darkPct;
+      return { light: lightPct, dark: darkPct };
+    });
+    return result;
+  };
+
   return (
     <div className="min-h-screen">
       {/* Main container with max width */}
       <div className="mx-auto max-w-[1304px] p-6">
         {/* Page title - Manrope Bold 32px #2d3145 */}
         <h1 className="mb-6 text-[32px] font-bold leading-[44px] text-[#2d3145]">
-          User schedule
+          График пользователей и субподрядчиков
         </h1>
+
+        {/* Карточки с графиками (WeeklyBars) */}
+        <div className="mb-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {isLoading && (
+            <div className="col-span-full text-sm text-[#aab8c2]">Загрузка пользователей...</div>
+          )}
+          {!isLoading && searchedUsers.slice(0, 12).map(user => (
+            <div key={user.id} className="rounded-2xl border border-[#e6ebf1] bg-white p-4 shadow-sm">
+              <div className="mb-3 flex items-center gap-3">
+                <div className="h-9 w-9 rounded-full bg-[#ccd5dc]" />
+                <div>
+                  <div className="text-sm font-medium text-[#2d3145]">{user.displayName}</div>
+                  <div className="text-xs text-[#aab8c2]">{user.company?.type === 'SUBCONTRACTOR' ? 'Субподрядчик' : 'Сотрудник'}</div>
+                </div>
+              </div>
+              <WeeklyBars data={scheduleToWeeklyBars(user)} />
+            </div>
+          ))}
+        </div>
 
         {/* Filter section - white bg, rounded-2xl, 24px padding */}
         <div className="mb-6 rounded-2xl bg-white p-6 shadow-sm">
@@ -119,16 +158,16 @@ export function CompanySchedulesPage({ companyId }: CompanySchedulesPageProps) {
               />
             </div>
 
-            {/* Company dropdown */}
+            {/* Фильтр по типу компании пользователя */}
             <div className="relative min-w-[200px]">
               <select
-                value={selectedCompany}
-                onChange={(e) => setSelectedCompany(e.target.value)}
+                value={selectedFilter}
+                onChange={(e) => setSelectedFilter(e.target.value as 'all' | 'subcontractors' | 'internal')}
                 className="h-10 w-full appearance-none rounded-lg border border-[#ccd5dc] bg-white px-3 pr-8 text-sm font-medium text-[#2d3145] focus:border-[#79c3b3] focus:outline-none focus:ring-1 focus:ring-[#79c3b3]"
               >
-                <option>All companies</option>
-                <option>Company A</option>
-                <option>Company B</option>
+                <option value="all">Все</option>
+                <option value="subcontractors">Субподрядчики</option>
+                <option value="internal">Сотрудники</option>
               </select>
               <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#aab8c2]" />
             </div>
@@ -159,7 +198,7 @@ export function CompanySchedulesPage({ companyId }: CompanySchedulesPageProps) {
                 activeTab === 'work' ? 'text-[#2d3145]' : 'text-[#aab8c2] hover:text-[#2d3145]'
               }`}
             >
-              Work schedule
+              Рабочий график
               {activeTab === 'work' && (
                 <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#79c3b3]" />
               )}
@@ -172,7 +211,7 @@ export function CompanySchedulesPage({ companyId }: CompanySchedulesPageProps) {
                 activeTab === 'vacations' ? 'text-[#2d3145]' : 'text-[#aab8c2] hover:text-[#2d3145]'
               }`}
             >
-              Employee vacations
+              Отпуска сотрудников
               {activeTab === 'vacations' && (
                 <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#79c3b3]" />
               )}
@@ -217,7 +256,7 @@ export function CompanySchedulesPage({ companyId }: CompanySchedulesPageProps) {
                 <tr className="bg-[#eff2f5]">
                   {/* Name column - 167px */}
                   <th className="sticky left-0 z-10 w-[167px] border-b border-r border-[#ccd5dc] bg-[#eff2f5] px-4 py-3 text-left text-sm font-medium text-[#2d3145]">
-                    Name
+                    Имя
                   </th>
                   {/* ID column - 167px */}
                   <th className="sticky left-[167px] z-10 w-[167px] border-b border-r border-[#ccd5dc] bg-[#eff2f5] px-4 py-3 text-left text-sm font-medium text-[#2d3145]">
@@ -225,7 +264,7 @@ export function CompanySchedulesPage({ companyId }: CompanySchedulesPageProps) {
                   </th>
                   {/* Role column - 167px */}
                   <th className="sticky left-[334px] z-10 w-[167px] border-b border-r border-[#ccd5dc] bg-[#eff2f5] px-4 py-3 text-left text-sm font-medium text-[#2d3145]">
-                    Role
+                    Роль
                   </th>
                   {/* Day columns - 105px each */}
                   {WEEKDAYS.map((day) => (
@@ -243,29 +282,29 @@ export function CompanySchedulesPage({ companyId }: CompanySchedulesPageProps) {
 
               {/* Table body */}
               <tbody>
-                {filteredEmployees.map((employee, idx) => {
+                {searchedUsers.map((user, idx) => {
                   // Alternate row backgrounds: white and #e4f3f0
                   const isGreenRow = idx % 2 === 1;
                   const rowBg = isGreenRow ? 'bg-[#e4f3f0]' : 'bg-white';
 
                   return (
-                    <tr key={employee.id} className={`h-[48px] ${rowBg}`}>
+                    <tr key={user.id} className={`h-[48px] ${rowBg}`}>
                       {/* Name cell */}
                       <td className={`sticky left-0 z-10 border-b border-r border-[#f1f3f4] px-4 ${rowBg}`}>
                         <div className="flex items-center gap-2">
                           <div className="h-8 w-8 rounded-full bg-[#ccd5dc]" />
-                          <span className="text-sm font-normal text-[#2d3145]">{employee.name}</span>
+                          <span className="text-sm font-normal text-[#2d3145]">{user.displayName}</span>
                         </div>
                       </td>
 
                       {/* ID cell */}
                       <td className={`sticky left-[167px] z-10 border-b border-r border-[#f1f3f4] px-4 text-sm font-normal text-[#2d3145] ${rowBg}`}>
-                        {employee.id}
+                        {user.id}
                       </td>
 
                       {/* Role cell */}
                       <td className={`sticky left-[334px] z-10 border-b border-r border-[#f1f3f4] px-4 text-sm font-normal text-[#2d3145] ${rowBg}`}>
-                        {employee.role}
+                        {user.roles?.[0]?.name || '—'}
                       </td>
 
                       {/* Day cells */}
@@ -274,7 +313,12 @@ export function CompanySchedulesPage({ companyId }: CompanySchedulesPageProps) {
                           key={day}
                           className="border-b border-r border-[#f1f3f4] px-4 text-center text-sm font-normal text-[#2d3145]"
                         >
-                          9-18
+                          {(() => {
+                            const scheduleMap: any = user.workSchedule || {};
+                            const dayKeyMap: Record<string,string> = { Mon:'monday', Tue:'tuesday', Wed:'wednesday', Thu:'thursday', Fri:'friday', Sat:'saturday', Sun:'sunday' };
+                            const seg = scheduleMap[dayKeyMap[day]];
+                            return seg ? `${seg.start}-${seg.end}` : '—';
+                          })()}
                         </td>
                       ))}
 
@@ -314,7 +358,7 @@ export function CompanySchedulesPage({ companyId }: CompanySchedulesPageProps) {
                   <tr className="bg-[#eff2f5]">
                     {/* Name column - 167px */}
                     <th className="sticky left-0 z-10 w-[167px] border-b border-r border-[#ccd5dc] bg-[#eff2f5] px-4 py-3 text-left text-sm font-medium text-[#2d3145]">
-                      Name
+                      Имя
                     </th>
                     {/* ID column - 167px */}
                     <th className="sticky left-[167px] z-10 w-[167px] border-b border-r border-[#ccd5dc] bg-[#eff2f5] px-4 py-3 text-left text-sm font-medium text-[#2d3145]">
@@ -322,7 +366,7 @@ export function CompanySchedulesPage({ companyId }: CompanySchedulesPageProps) {
                     </th>
                     {/* Role column - 167px */}
                     <th className="sticky left-[334px] z-10 w-[167px] border-b border-r border-[#ccd5dc] bg-[#eff2f5] px-4 py-3 text-left text-sm font-medium text-[#2d3145]">
-                      Role
+                      Роль
                     </th>
                     {/* Month columns - 105px each */}
                     {MONTHS.map((month) => (
@@ -340,33 +384,33 @@ export function CompanySchedulesPage({ companyId }: CompanySchedulesPageProps) {
 
                 {/* Table body */}
                 <tbody>
-                  {filteredEmployees.map((employee, idx) => {
+                  {searchedUsers.map((user, idx) => {
                     const isGreenRow = idx % 2 === 1;
                     const rowBg = isGreenRow ? 'bg-[#e4f3f0]' : 'bg-white';
 
                     return (
-                      <tr key={employee.id} className={`h-[48px] ${rowBg}`}>
+                      <tr key={user.id} className={`h-[48px] ${rowBg}`}>
                         {/* Name cell */}
                         <td className={`sticky left-0 z-10 border-b border-r border-[#f1f3f4] px-4 ${rowBg}`}>
                           <div className="flex items-center gap-2">
                             <div className="h-8 w-8 rounded-full bg-[#ccd5dc]" />
-                            <span className="text-sm font-normal text-[#2d3145]">{employee.name}</span>
+                            <span className="text-sm font-normal text-[#2d3145]">{user.displayName}</span>
                           </div>
                         </td>
 
                         {/* ID cell */}
                         <td className={`sticky left-[167px] z-10 border-b border-r border-[#f1f3f4] px-4 text-sm font-normal text-[#2d3145] ${rowBg}`}>
-                          {employee.id}
+                          {user.id}
                         </td>
 
                         {/* Role cell */}
                         <td className={`sticky left-[334px] z-10 border-b border-r border-[#f1f3f4] px-4 text-sm font-normal text-[#2d3145] ${rowBg}`}>
-                          {employee.role}
+                          {user.roles?.[0]?.name || '—'}
                         </td>
 
                         {/* Month cells */}
                         {MONTHS.map((month, monthIdx) => {
-                          const vacations = getVacationsForEmployee(employee.id, monthIdx);
+                          const vacations = getVacationsForUser(user.id, monthIdx);
                           const hasVacation = vacations.length > 0;
 
                           return (
@@ -443,7 +487,7 @@ export function CompanySchedulesPage({ companyId }: CompanySchedulesPageProps) {
                     </span>
                   </div>
                   <div className="text-xs text-white/80">
-                    Vacation Type: <span className="font-medium">{vacationType?.label}</span>
+                    Тип: <span className="font-medium">{vacationType?.label}</span>
                   </div>
                 </div>
               );

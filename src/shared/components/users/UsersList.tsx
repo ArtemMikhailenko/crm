@@ -6,6 +6,8 @@ import { Button } from '../../ui/button'
 import { Input } from '../../ui/input'
 import { Card, CardContent } from '../../ui/card'
 import { Badge } from '../../ui/badge'
+import { UserActionsMenu } from './UserActionsMenu'
+import { ChangeRoleModal } from './ChangeRoleModal'
 import { 
   Search, 
   Filter as FilterIcon, 
@@ -29,9 +31,11 @@ export const UsersList: React.FC<UsersListProps> = ({ activeTab = 'all' }) => {
     limit: 10,
   })
   const [searchQuery, setSearchQuery] = useState('')
+  const [roleModalOpen, setRoleModalOpen] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<{ id: string; name: string; roles: string[] } | null>(null)
 
   const router = useRouter()
-  const { data: usersData, isLoading, error } = useUsers(searchParams)
+  const { data: usersData, isLoading, error, refetch } = useUsers(searchParams)
   const { data: companiesData } = useCompanies({ type: 'SUBCONTRACTOR' })
   const deleteUserMutation = useDeleteUser()
 
@@ -55,6 +59,24 @@ export const UsersList: React.FC<UsersListProps> = ({ activeTab = 'all' }) => {
     if (window.confirm(`Are you sure you want to delete user "${userName}"?`)) {
       deleteUserMutation.mutate(userId)
     }
+  }
+
+  const handleOpenRoleModal = (user: any) => {
+    setSelectedUser({
+      id: user.id,
+      name: user.displayName,
+      roles: user.roles?.map((r: any) => r.id) || []
+    })
+    setRoleModalOpen(true)
+  }
+
+  const handleCloseRoleModal = () => {
+    setRoleModalOpen(false)
+    setSelectedUser(null)
+  }
+
+  const handleRoleChangeSuccess = () => {
+    refetch()
   }
 
   const handleUserClick = (userId: string) => {
@@ -245,22 +267,12 @@ export const UsersList: React.FC<UsersListProps> = ({ activeTab = 'all' }) => {
                   {getStatusBadge(user.status)}
                 </div>
                 <div className="border-l border-[#f1f3f4] px-4 py-3">
-                  <div className="flex items-center justify-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleUserClick(user.id)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteUser(user.id, user.displayName)}
-                      disabled={deleteUserMutation.isPending}
-                    >
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
+                  <div className="flex items-center justify-center">
+                    <UserActionsMenu
+                      onEdit={() => handleUserClick(user.id)}
+                      onDelete={() => handleDeleteUser(user.id, user.displayName)}
+                      onChangeRole={() => handleOpenRoleModal(user)}
+                    />
                   </div>
                 </div>
               </div>
@@ -268,6 +280,18 @@ export const UsersList: React.FC<UsersListProps> = ({ activeTab = 'all' }) => {
           )}
         </CardContent>
       </Card>
+
+      {/* Role Change Modal */}
+      {selectedUser && (
+        <ChangeRoleModal
+          open={roleModalOpen}
+          onClose={handleCloseRoleModal}
+          userId={selectedUser.id}
+          userName={selectedUser.name}
+          currentRoles={selectedUser.roles}
+          onSuccess={handleRoleChangeSuccess}
+        />
+      )}
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (

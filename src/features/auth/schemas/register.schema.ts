@@ -19,6 +19,7 @@ export const registerSchema = z
     passwordRepeat: z
       .string()
       .min(8, { message: "Password must be at least 8 characters" }),
+    recaptcha: z.string().min(1, { message: "reCAPTCHA verification required" }).optional(),
   })
   .superRefine(({ password, passwordRepeat }, ctx) => {
     if (password !== passwordRepeat) {

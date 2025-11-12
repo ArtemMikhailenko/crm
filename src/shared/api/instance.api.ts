@@ -4,6 +4,7 @@ import { API_CONFIG } from './config'
 export const apiClient = axios.create({
   baseURL: API_CONFIG.baseURL,
   timeout: API_CONFIG.timeout,
+  withCredentials: true, // Важно для session cookies
   headers: {
     'Content-Type': 'application/json',
   },
@@ -54,13 +55,15 @@ apiClient.interceptors.response.use(
       message: error.message,
     })
     
-    if (error.response?.status === 401) {
-      // Очистим токен и редиректим на страницу логина
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('authToken')
-        window.location.href = '/auth/login'
-      }
-    }
+    // НЕ редиректим автоматически на login при 401
+    // Пусть компоненты сами решают что делать с ошибкой
+    // if (error.response?.status === 401) {
+    //   if (typeof window !== 'undefined') {
+    //     localStorage.removeItem('authToken')
+    //     window.location.href = '/auth/login'
+    //   }
+    // }
+    
     return Promise.reject(error)
   }
 )

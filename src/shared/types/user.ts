@@ -14,6 +14,7 @@ export interface User {
   lastLoginAt?: Date
   createdAt: Date
   updatedAt: Date
+  isTwoFactorEnabled?: boolean
   company?: {
     id: string
     name: string

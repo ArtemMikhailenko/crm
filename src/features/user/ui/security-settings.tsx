@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Globe } from "lucide-react";
+import { Eye, EyeOff, Globe, ShieldCheck } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -11,7 +11,8 @@ import {
   updatePasswordSchema,
 } from "@/features/user/schemas";
 
-import { useUpdatePassword } from "@/features/user/hooks";
+import { useUpdatePassword, useToggle2FA } from "@/features/user/hooks";
+import { useProfile } from "@/shared/hooks";
 
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -25,11 +26,14 @@ import {
   Input,
   PasswordInput,
   Separator,
+  Switch,
 } from "@/shared/ui";
 
 export function SecuritySettings() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const { updatePassword, isPending } = useUpdatePassword();
+  const { user } = useProfile();
+  const { toggle2FA, isPending: is2FAPending } = useToggle2FA(user?.id || "");
 
   const form = useForm<UpdatePasswordSchemaType>({
     resolver: zodResolver(updatePasswordSchema),
@@ -48,8 +52,37 @@ export function SecuritySettings() {
     form.reset();
   };
 
+  const handle2FAToggle = (enabled: boolean) => {
+    toggle2FA(enabled);
+  };
+
   return (
     <div className="space-y-6">
+      {/* Two-Factor Authentication Section */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4" />
+          <span className="font-medium">Two-Factor Authentication</span>
+        </div>
+        <div className="rounded-lg border p-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-sm font-medium">Email OTP Verification</p>
+              <p className="text-xs text-muted-foreground">
+                Require a verification code sent to your email when logging in
+              </p>
+            </div>
+            <Switch
+              checked={user?.isTwoFactorEnabled ?? true}
+              onCheckedChange={handle2FAToggle}
+              disabled={is2FAPending || !user?.id}
+            />
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
       {/* Password Section */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

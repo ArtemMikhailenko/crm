@@ -3,4 +3,5 @@ export const AUTH_URLS = {
   login: "auth/login",
   oauth: "auth/oauth/connect",
   logout: "auth/logout",
+  twoFactorResend: "auth/2fa/resend",
 };
