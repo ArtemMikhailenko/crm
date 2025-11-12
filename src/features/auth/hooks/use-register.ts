@@ -14,18 +14,13 @@ export const useRegister = () => {
     mutationFn: ({ values }: { values: RegisterSchemaType }) => {
       return authService.register(values);
     },
-    onSuccess: (data: any) => {
-      // Устанавливаем токен в localStorage после успешной регистрации (если есть)
-      if (data.data?.accessToken || data.data?.token) {
-        localStorage.setItem('authToken', data.data.accessToken || data.data.token);
-      }
-      
+    onSuccess: () => {
+      // После успешной регистрации перенаправляем на страницу логина
+      // и не сохраняем токен, чтобы пользователь залогинился вручную
       toast.success("User registered successfully", {
-        description: "Please check your email for verification",
+        description: "Now you can log in",
       });
-      
-      // Редирект на dashboard
-      router.push("/dashboard");
+      router.push("/auth/login");
     },
     onError: error => {
       console.log(error);
